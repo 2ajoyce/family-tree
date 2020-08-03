@@ -1,0 +1,25 @@
+label {
+  margin-top: 1em;
+  display: flex;
+}
+
+select {
+  min-width: 10em;
+}
+
+#ParentSelector_helpIcon {
+  cursor: help;
+  height: 1em;
+  margin-left: 0.25em;
+  margin-top: 0.25em;
+}
+
+#ParentSelector_helpIcon_text {
+  visibility: hidden;
+  margin: 0.5em;
+  font-size: small;
+}
+
+#ParentSelector_helpIcon:focus ~ #ParentSelector_helpIcon_text {
+  visibility: visible;
+}

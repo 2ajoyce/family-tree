@@ -1,0 +1,39 @@
+#App {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  min-width: 50em;
+  margin-top: 1em;
+  margin-bottom: 2em;
+}
+
+@media (max-width: 70em) {
+  #App {
+    width: 90%;
+  }
+}
+
+@media (max-width: 50em) {
+  #App {
+    width: 100%;
+  }
+}
+
+#App_header {
+  display: flex;
+  flex-direction: row;
+}
+
+#App_header button.show-graph {
+  margin-top: auto;
+  font-size: medium;
+}
+
+#App_header button#App_add-person {
+  margin-right: 1em;
+}
+
+#App_header h1 {
+  margin: 0;
+  margin-top: auto;
+}
