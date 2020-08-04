@@ -1,4 +1,3 @@
-import { Dispatch } from 'react'
 import { Person } from './types/person'
 
 export const mostRecent = (a: Person, b: Person): number => {

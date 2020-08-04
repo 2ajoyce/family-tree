@@ -1,100 +1,80 @@
+import primitives from 'basicprimitives'
+import { FamDiagram } from 'basicprimitivesreact'
 import React, { Component } from 'react'
-import { GraphView } from 'react-digraph'
+import { Person } from '../../types/person'
+import './graph.css'
 
 type GraphProps = {
-  graph: any
-  selected: any
+  family: Person[]
+}
+type GraphState = {
+  items: GraphPerson[]
 }
 
-const GraphConfig = {
-  NodeTypes: {
-    empty: {
-      // required to show empty nodes
-      typeText: 'None',
-      shapeId: '#empty', // relates to the type property of a node
-      shape: (
-        <symbol viewBox="0 0 100 100" id="empty" key="0">
-          <circle cx="50" cy="50" r="45"></circle>
-        </symbol>
-      ),
-    },
-    custom: {
-      // required to show empty nodes
-      typeText: 'Custom',
-      shapeId: '#custom', // relates to the type property of a node
-      shape: (
-        <symbol viewBox="0 0 50 25" id="custom" key="0">
-          <ellipse cx="50" cy="25" rx="50" ry="25"></ellipse>
-        </symbol>
-      ),
-    },
-  },
-  NodeSubtypes: {},
-  EdgeTypes: {
-    emptyEdge: {
-      // required to show empty edges
-      shapeId: '#emptyEdge',
-      shape: (
-        <symbol viewBox="0 0 50 50" id="emptyEdge" key="0">
-          <circle cx="25" cy="25" r="8" fill="currentColor">
-            {' '}
-          </circle>
-        </symbol>
-      ),
-    },
-  },
+type GraphPerson = {
+  id: string
+  parents?: string[]
+  spouses?: string[]
+  title: string
 }
 
-const NODE_KEY = 'id' // Allows D3 to correctly update DOM
-
-export class Graph extends Component<GraphProps, GraphProps> {
+export class Graph extends Component<GraphProps, GraphState> {
   constructor(props: GraphProps) {
     super(props)
-
-    this.state = {
-      graph: props.graph,
-      selected: props.selected,
-    }
+    const graphPeople = props.family
+      .sort((a, b) => (a.birth && b.birth && a.birth < b.birth ? -1 : 1))
+      .map<GraphPerson>((person) => {
+        return {
+          id: person.id,
+          parents: person.parents,
+          spouses: person.spouse ? [person.spouse] : undefined,
+          title: person.name,
+        }
+      })
+    this.state = { items: graphPeople }
   }
 
-  onSelectNode = () => console.log('onSelectNode')
-  onCreateNode = () => console.log('onCreateNode')
-  onUpdateNode = () => console.log('onUpdateNode')
-  onDeleteNode = () => console.log('onDeleteNode')
-  onSelectEdge = () => console.log('onSelectEdge')
-  onCreateEdge = () => console.log('onCreateEdge')
-  onSwapEdge = () => console.log('onSwapEdge')
-  onDeleteEdge = () => console.log('onDeleteEdge')
-
   render() {
-    const nodes = this.state.graph.nodes
-    const edges = this.state.graph.edges
-    const selected = this.state.selected
-
-    const NodeTypes = GraphConfig.NodeTypes
-    const NodeSubtypes = GraphConfig.NodeSubtypes
-    const EdgeTypes = GraphConfig.EdgeTypes
+    const config = {
+      pageFitMode: primitives.common.PageFitMode.None,
+      cursorItem: 2,
+      linesWidth: 1,
+      linesColor: 'black',
+      hasSelectorCheckbox: primitives.common.Enabled.False,
+      normalLevelShift: 20,
+      dotLevelShift: 20,
+      lineLevelShift: 20,
+      normalItemsInterval: 10,
+      dotItemsInterval: 30,
+      lineItemsInterval: 30,
+      arrowsDirection: primitives.common.GroupByType.Parents,
+      showExtraArrows: false,
+      defaultTemplateName: 'template',
+      templates: [
+        {
+          name: 'template',
+          itemSize: { width: 100, height: 50 },
+          minimizedItemSize: { width: 3, height: 3 },
+          highlightPadding: { left: 2, top: 2, right: 2, bottom: 2 },
+          onItemRender: ({ context: itemConfig }: any) => {
+            const itemTitleColor =
+              itemConfig.itemTitleColor != null
+                ? itemConfig.itemTitleColor
+                : primitives.common.Colors.RoyalBlue
+            return (
+              <div className="ContactTemplate">
+                <div className="ContactTitle">{itemConfig.title}</div>
+              </div>
+            )
+          },
+        },
+      ],
+      items: this.state.items,
+    }
 
     return (
       <div id="graph">
-        <GraphView
-          ref="GraphView"
-          nodeKey={NODE_KEY}
-          nodes={nodes}
-          edges={edges}
-          selected={selected}
-          nodeTypes={NodeTypes}
-          nodeSubtypes={NodeSubtypes}
-          edgeTypes={EdgeTypes}
-          onSelectNode={this.onSelectNode}
-          onCreateNode={this.onCreateNode}
-          onUpdateNode={this.onUpdateNode}
-          onDeleteNode={this.onDeleteNode}
-          onSelectEdge={this.onSelectEdge}
-          onCreateEdge={this.onCreateEdge}
-          onSwapEdge={this.onSwapEdge}
-          onDeleteEdge={this.onDeleteEdge}
-        />
+        <FamDiagram centerOnCursor={true} config={config} />
       </div>
     )
   }
